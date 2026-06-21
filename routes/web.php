@@ -1,11 +1,19 @@
 <?php
 
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Teams\TeamInvitationController;
 use App\Http\Middleware\EnsureTeamMembership;
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'welcome')->name('home');
+Route::get('/', HomeController::class)->name('home');
+
+// Keyless demo widget (falls back to the configured dev origin).
+Route::inertia('/chat', 'chat')->name('chat');
+// Per-merchant widget, resolved by the team's public widget key.
+Route::get('/widget/{team:widget_key}', [ChatController::class, 'widget'])->name('widget');
+Route::post('/chat/message', [ChatController::class, 'message'])->name('chat.message');
 
 Route::prefix('{current_team}')
     ->middleware(['auth', 'verified', EnsureTeamMembership::class])

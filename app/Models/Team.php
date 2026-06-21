@@ -11,17 +11,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 /**
  * @property int $id
  * @property string $name
  * @property string $slug
+ * @property string|null $widget_key
  * @property bool $is_personal
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
+ * @property-read CatalogueOrigin|null $catalogueOrigin
  * @property-read Collection<int, TeamInvitation> $invitations
  * @property-read Collection<int, Membership> $memberships
  * @property-read Collection<int, User> $members
@@ -43,6 +47,10 @@ class Team extends Model
             if (empty($team->slug)) {
                 $team->slug = static::generateUniqueTeamSlug($team->name);
             }
+
+            if (empty($team->widget_key)) {
+                $team->widget_key = static::generateUniqueWidgetKey();
+            }
         });
 
         static::updating(function (Team $team) {
@@ -60,6 +68,28 @@ class Team extends Model
         return $this->members()
             ->wherePivot('role', TeamRole::Owner->value)
             ->first();
+    }
+
+    /**
+     * Generate a public widget key the embedded storefront script uses to identify this team.
+     */
+    public static function generateUniqueWidgetKey(): string
+    {
+        do {
+            $key = 'clsr_pub_'.Str::lower(Str::random(32));
+        } while (static::where('widget_key', $key)->exists());
+
+        return $key;
+    }
+
+    /**
+     * Get the merchant's connected catalogue origin (their store), if any.
+     *
+     * @return HasOne<CatalogueOrigin, $this>
+     */
+    public function catalogueOrigin(): HasOne
+    {
+        return $this->hasOne(CatalogueOrigin::class);
     }
 
     /**
