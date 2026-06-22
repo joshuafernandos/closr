@@ -15,27 +15,27 @@ use Illuminate\Support\Carbon;
  * at rest, so each driver can store whatever shape it needs.
  *
  * @property int $id
- * @property int $team_id
+ * @property int $business_id
  * @property string $driver
  * @property array<string, mixed> $config
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Team $team
+ * @property-read Business $business
  */
-#[Fillable(['team_id', 'driver', 'config'])]
+#[Fillable(['business_id', 'driver', 'config'])]
 class CatalogueOrigin extends Model
 {
     /** @use HasFactory<CatalogueOriginFactory> */
     use HasFactory;
 
     /**
-     * Get the team (merchant) that owns this origin.
+     * Get the business (merchant) that owns this origin.
      *
-     * @return BelongsTo<Team, $this>
+     * @return BelongsTo<Business, $this>
      */
-    public function team(): BelongsTo
+    public function business(): BelongsTo
     {
-        return $this->belongsTo(Team::class);
+        return $this->belongsTo(Business::class);
     }
 
     /**

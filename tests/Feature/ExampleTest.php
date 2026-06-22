@@ -7,10 +7,10 @@ test('guests are redirected to login from the home route', function () {
         ->assertRedirect(route('login'));
 });
 
-test('authenticated users are redirected to their team dashboard', function () {
+test('authenticated users are redirected to their business dashboard', function () {
     $user = User::factory()->create();
 
     $this->actingAs($user)
         ->get(route('home'))
-        ->assertRedirect("/{$user->currentTeam->slug}/dashboard");
+        ->assertRedirect("/{$user->currentBusiness->slug}/dashboard");
 });

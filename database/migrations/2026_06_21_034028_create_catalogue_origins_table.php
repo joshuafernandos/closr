@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('catalogue_origins', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('team_id')->unique()->constrained()->cascadeOnDelete();
+            $table->foreignId('business_id')->unique()->constrained()->cascadeOnDelete();
             $table->string('driver');
             $table->text('config')->nullable();
             $table->timestamps();

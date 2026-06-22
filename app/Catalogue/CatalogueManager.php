@@ -6,7 +6,7 @@ use App\Catalogue\Contracts\ProductSource;
 use App\Catalogue\Sources\DummyJsonSource;
 use App\Catalogue\Sources\NullProductSource;
 use App\Catalogue\Sources\WooCommerceSource;
-use App\Models\Team;
+use App\Models\Business;
 use Closure;
 use Illuminate\Contracts\Config\Repository;
 use InvalidArgumentException;
@@ -34,9 +34,9 @@ class CatalogueManager
      * Resolve the catalogue origin for a merchant, falling back to a no-op
      * source when the merchant has not connected a store.
      */
-    public function forTeam(Team $team): ProductSource
+    public function forBusiness(Business $business): ProductSource
     {
-        $origin = $team->catalogueOrigin;
+        $origin = $business->catalogueOrigin;
 
         if ($origin === null) {
             return new NullProductSource;

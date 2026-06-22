@@ -1,8 +1,8 @@
 <?php
 
-use App\Enums\TeamRole;
-use App\Models\Team;
-use App\Models\TeamInvitation;
+use App\Enums\BusinessRole;
+use App\Models\Business;
+use App\Models\BusinessInvitation;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
@@ -12,13 +12,13 @@ test('registration screen can be rendered', function () {
     $response->assertOk();
 });
 
-test('registration screen includes team invitation context', function () {
+test('registration screen includes business invitation context', function () {
     $owner = User::factory()->create();
-    $team = Team::factory()->create(['name' => 'Laravel Team']);
-    $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
+    $business = Business::factory()->create(['name' => 'Laravel Business']);
+    $business->members()->attach($owner, ['role' => BusinessRole::Owner->value]);
 
-    $invitation = TeamInvitation::factory()->create([
-        'team_id' => $team->id,
+    $invitation = BusinessInvitation::factory()->create([
+        'business_id' => $business->id,
         'email' => 'invited@example.com',
         'invited_by' => $owner->id,
     ]);
@@ -28,15 +28,16 @@ test('registration screen includes team invitation context', function () {
     $response->assertOk();
     $response->assertInertia(fn (Assert $page) => $page
         ->component('auth/register')
-        ->where('teamInvitation.code', $invitation->code)
-        ->where('teamInvitation.teamName', 'Laravel Team'),
+        ->where('businessInvitation.code', $invitation->code)
+        ->where('businessInvitation.businessName', 'Laravel Business'),
     );
 });
 
-test('new users can register', function () {
+test('new users can register with a business name', function () {
     $response = $this->post(route('register.store'), [
         'name' => 'Test User',
         'email' => 'test@example.com',
+        'business_name' => 'Acme Store',
         'password' => 'password',
         'password_confirmation' => 'password',
     ]);
@@ -45,4 +46,22 @@ test('new users can register', function () {
 
     $user = User::where('email', 'test@example.com')->first();
     $response->assertRedirect(route('dashboard'));
+
+    $business = $user->currentBusiness;
+
+    expect($business)->not->toBeNull()
+        ->and($business->name)->toBe('Acme Store')
+        ->and($user->ownsBusiness($business))->toBeTrue();
+});
+
+test('registration requires a business name', function () {
+    $response = $this->from(route('register'))->post(route('register.store'), [
+        'name' => 'Test User',
+        'email' => 'test@example.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+    ]);
+
+    $response->assertSessionHasErrors('business_name');
+    $this->assertGuest();
 });

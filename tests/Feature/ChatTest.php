@@ -2,8 +2,8 @@
 
 use App\Ai\Agents\Receptionist;
 use App\Ai\Agents\ScopeGuard;
+use App\Models\Business;
 use App\Models\CatalogueOrigin;
-use App\Models\Team;
 use Inertia\Testing\AssertableInertia;
 
 /**
@@ -15,14 +15,14 @@ function fakeScopeGuard(string $verdict = 'in_scope'): void
 }
 
 it('renders the widget for a merchant resolved by their widget key', function () {
-    $team = Team::factory()->create();
+    $business = Business::factory()->create();
 
-    $this->get(route('widget', $team->widget_key))
+    $this->get(route('widget', $business->widget_key))
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->component('chat')
-            ->where('widgetKey', $team->widget_key)
-            ->where('storeName', $team->name)
+            ->where('widgetKey', $business->widget_key)
+            ->where('storeName', $business->name)
         );
 });
 
@@ -61,11 +61,11 @@ it('serves a shopper using the merchant matched by the widget key', function () 
     fakeScopeGuard('in_scope');
     Receptionist::fake();
 
-    $team = Team::factory()->create();
-    CatalogueOrigin::factory()->for($team)->create();
+    $business = Business::factory()->create();
+    CatalogueOrigin::factory()->for($business)->create();
 
     $this->postJson(route('chat.message'), [
-        'key' => $team->widget_key,
+        'key' => $business->widget_key,
         'message' => 'I need a winter jacket',
     ])->assertOk()->assertJsonStructure(['reply', 'step', 'products']);
 

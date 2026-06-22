@@ -4,14 +4,14 @@ use App\Catalogue\CatalogueManager;
 use App\Catalogue\Sources\DummyJsonSource;
 use App\Catalogue\Sources\NullProductSource;
 use App\Catalogue\Sources\WooCommerceSource;
+use App\Models\Business;
 use App\Models\CatalogueOrigin;
-use App\Models\Team;
 use Illuminate\Support\Facades\Http;
 
 it('resolves a no-op origin when the merchant has not connected a store', function () {
-    $team = Team::factory()->create();
+    $business = Business::factory()->create();
 
-    $source = app(CatalogueManager::class)->forTeam($team);
+    $source = app(CatalogueManager::class)->forBusiness($business);
 
     expect($source)->toBeInstanceOf(NullProductSource::class)
         ->and($source->search('anything'))->toBeEmpty();
@@ -20,14 +20,14 @@ it('resolves a no-op origin when the merchant has not connected a store', functi
 it('builds a working origin from the merchant\'s stored config', function () {
     Http::fake(['*/wp-json/wc/v3/products*' => Http::response([])]);
 
-    $team = Team::factory()->create();
+    $business = Business::factory()->create();
 
-    CatalogueOrigin::factory()->for($team)->create([
+    CatalogueOrigin::factory()->for($business)->create([
         'driver' => 'woocommerce',
         'config' => ['url' => 'https://acme.test', 'key' => 'ck_x', 'secret' => 'cs_y'],
     ]);
 
-    $source = app(CatalogueManager::class)->forTeam($team->fresh());
+    $source = app(CatalogueManager::class)->forBusiness($business->fresh());
 
     expect($source)->toBeInstanceOf(WooCommerceSource::class);
 
@@ -61,9 +61,9 @@ it('lets a new platform register its own origin driver', function () {
     expect($manager->make('custom', []))->toBeInstanceOf(NullProductSource::class);
 });
 
-it('gives every team a unique public widget key on creation', function () {
-    $a = Team::factory()->create();
-    $b = Team::factory()->create();
+it('gives every business a unique public widget key on creation', function () {
+    $a = Business::factory()->create();
+    $b = Business::factory()->create();
 
     expect($a->widget_key)->toStartWith('clsr_pub_')
         ->and($a->widget_key)->not->toBe($b->widget_key);

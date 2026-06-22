@@ -2,10 +2,11 @@
 
 namespace App\Actions\Fortify;
 
-use App\Actions\Teams\CreateTeam;
+use App\Actions\Businesses\CreateBusiness;
 use App\Concerns\PasswordValidationRules;
 use App\Concerns\ProfileValidationRules;
 use App\Models\User;
+use App\Rules\BusinessName;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
@@ -14,7 +15,7 @@ class CreateNewUser implements CreatesNewUsers
 {
     use PasswordValidationRules, ProfileValidationRules;
 
-    public function __construct(private CreateTeam $createTeam)
+    public function __construct(private CreateBusiness $createBusiness)
     {
         //
     }
@@ -28,6 +29,7 @@ class CreateNewUser implements CreatesNewUsers
     {
         Validator::make($input, [
             ...$this->profileRules(),
+            'business_name' => ['required', 'string', 'max:255', new BusinessName],
             'password' => $this->passwordRules(),
         ])->validate();
 
@@ -38,7 +40,7 @@ class CreateNewUser implements CreatesNewUsers
                 'password' => $input['password'],
             ]);
 
-            $this->createTeam->handle($user, $user->name."'s Team", isPersonal: true);
+            $this->createBusiness->handle($user, $input['business_name'], isPersonal: true);
 
             return $user;
         });

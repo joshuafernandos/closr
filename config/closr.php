@@ -8,7 +8,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | A merchant connects their own store (an "origin") from the dashboard, and
-    | its credentials are stored per-team in the database. The settings below
+    | its credentials are stored per-business in the database. The settings below
     | are platform-level defaults shared across all merchants, plus an optional
     | local development origin used when a request arrives without a widget key.
     |

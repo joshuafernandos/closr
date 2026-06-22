@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Enums\TeamRole;
-use App\Models\Team;
+use App\Enums\BusinessRole;
+use App\Models\Business;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -44,15 +44,15 @@ class UserFactory extends Factory
     public function configure(): static
     {
         return $this->afterCreating(function ($user) {
-            $team = Team::factory()->personal()->create([
-                'name' => $user->name."'s Team",
+            $business = Business::factory()->personal()->create([
+                'name' => $user->name."'s Business",
             ]);
 
-            $team->members()->attach($user, [
-                'role' => TeamRole::Owner->value,
+            $business->members()->attach($user, [
+                'role' => BusinessRole::Owner->value,
             ]);
 
-            $user->switchTeam($team);
+            $user->switchBusiness($business);
         });
     }
 

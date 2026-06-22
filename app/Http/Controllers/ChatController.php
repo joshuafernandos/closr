@@ -7,7 +7,7 @@ use App\Ai\Agents\ScopeGuard;
 use App\Catalogue\CatalogueManager;
 use App\Catalogue\Contracts\ProductSource;
 use App\Catalogue\Sources\NullProductSource;
-use App\Models\Team;
+use App\Models\Business;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -28,11 +28,11 @@ class ChatController extends Controller
      * widget key. The key is handed to the page so every shopper turn is tied
      * back to this merchant's catalogue rather than the local dev origin.
      */
-    public function widget(Team $team): Response
+    public function widget(Business $business): Response
     {
         return Inertia::render('chat', [
-            'widgetKey' => $team->widget_key,
-            'storeName' => $team->name,
+            'widgetKey' => $business->widget_key,
+            'storeName' => $business->name,
         ]);
     }
 
@@ -86,7 +86,7 @@ class ChatController extends Controller
     /**
      * Resolve the catalogue origin for the merchant behind this widget key.
      *
-     * With a key, the origin comes from that team's connected store. Without
+     * With a key, the origin comes from that business's connected store. Without
      * one (the local dev / demo widget), fall back to the configured dev origin.
      */
     private function resolveOrigin(?string $widgetKey): ProductSource
@@ -95,10 +95,10 @@ class ChatController extends Controller
             return $this->devOrigin();
         }
 
-        $team = Team::where('widget_key', $widgetKey)->first();
+        $business = Business::where('widget_key', $widgetKey)->first();
 
-        return $team !== null
-            ? $this->catalogue->forTeam($team)
+        return $business !== null
+            ? $this->catalogue->forBusiness($business)
             : $this->devOrigin();
     }
 

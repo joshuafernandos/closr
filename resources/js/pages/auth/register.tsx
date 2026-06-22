@@ -1,7 +1,7 @@
 import { Form, Head } from '@inertiajs/react';
+import BusinessInvitationAlert from '@/components/business-invitation-alert';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
-import TeamInvitationAlert from '@/components/team-invitation-alert';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,14 +9,14 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { login } from '@/routes';
 import { store } from '@/routes/register';
-import type { TeamInvitationContext } from '@/types';
+import type { BusinessInvitationContext } from '@/types';
 
 type Props = {
     passwordRules: string;
-    teamInvitation?: TeamInvitationContext | null;
+    businessInvitation?: BusinessInvitationContext | null;
 };
 
-export default function Register({ passwordRules, teamInvitation }: Props) {
+export default function Register({ passwordRules, businessInvitation }: Props) {
     return (
         <>
             <Head title="Register" />
@@ -28,9 +28,9 @@ export default function Register({ passwordRules, teamInvitation }: Props) {
             >
                 {({ processing, errors }) => (
                     <>
-                        {teamInvitation && (
-                            <TeamInvitationAlert
-                                invitation={teamInvitation}
+                        {businessInvitation && (
+                            <BusinessInvitationAlert
+                                invitation={businessInvitation}
                                 action="Register"
                             />
                         )}
@@ -55,12 +55,28 @@ export default function Register({ passwordRules, teamInvitation }: Props) {
                             </div>
 
                             <div className="grid gap-2">
+                                <Label htmlFor="business_name">
+                                    Business name
+                                </Label>
+                                <Input
+                                    id="business_name"
+                                    type="text"
+                                    required
+                                    tabIndex={2}
+                                    autoComplete="organization"
+                                    name="business_name"
+                                    placeholder="Your store or company name"
+                                />
+                                <InputError message={errors.business_name} />
+                            </div>
+
+                            <div className="grid gap-2">
                                 <Label htmlFor="email">Email address</Label>
                                 <Input
                                     id="email"
                                     type="email"
                                     required
-                                    tabIndex={2}
+                                    tabIndex={3}
                                     autoComplete="email"
                                     name="email"
                                     placeholder="email@example.com"
@@ -73,7 +89,7 @@ export default function Register({ passwordRules, teamInvitation }: Props) {
                                 <PasswordInput
                                     id="password"
                                     required
-                                    tabIndex={3}
+                                    tabIndex={4}
                                     autoComplete="new-password"
                                     name="password"
                                     placeholder="Password"
@@ -89,7 +105,7 @@ export default function Register({ passwordRules, teamInvitation }: Props) {
                                 <PasswordInput
                                     id="password_confirmation"
                                     required
-                                    tabIndex={4}
+                                    tabIndex={5}
                                     autoComplete="new-password"
                                     name="password_confirmation"
                                     placeholder="Confirm password"
@@ -103,7 +119,7 @@ export default function Register({ passwordRules, teamInvitation }: Props) {
                             <Button
                                 type="submit"
                                 className="mt-2 w-full"
-                                tabIndex={5}
+                                tabIndex={6}
                                 data-test="register-user-button"
                             >
                                 {processing && <Spinner />}
@@ -115,17 +131,17 @@ export default function Register({ passwordRules, teamInvitation }: Props) {
                             Already have an account?{' '}
                             <TextLink
                                 href={
-                                    teamInvitation
+                                    businessInvitation
                                         ? login.url({
                                               query: {
                                                   invitation:
-                                                      teamInvitation.code,
+                                                      businessInvitation.code,
                                               },
                                           })
                                         : login()
                                 }
-                                data-test="team-invitation-login-link"
-                                tabIndex={6}
+                                data-test="business-invitation-login-link"
+                                tabIndex={7}
                             >
                                 Log in
                             </TextLink>
