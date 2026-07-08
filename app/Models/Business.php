@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -25,7 +24,9 @@ use Illuminate\Support\Str;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
- * @property-read CatalogueOrigin|null $catalogueOrigin
+ * @property-read Collection<int, CatalogueOrigin> $catalogueOrigins
+ * @property-read Collection<int, Widget> $widgets
+ * @property-read Collection<int, Conversation> $conversations
  * @property-read Collection<int, BusinessInvitation> $invitations
  * @property-read Collection<int, Membership> $memberships
  * @property-read Collection<int, User> $members
@@ -83,13 +84,33 @@ class Business extends Model
     }
 
     /**
-     * Get the merchant's connected catalogue origin (their store), if any.
+     * Get the merchant's connected catalogue origins (their stores).
      *
-     * @return HasOne<CatalogueOrigin, $this>
+     * @return HasMany<CatalogueOrigin, $this>
      */
-    public function catalogueOrigin(): HasOne
+    public function catalogueOrigins(): HasMany
     {
-        return $this->hasOne(CatalogueOrigin::class);
+        return $this->hasMany(CatalogueOrigin::class);
+    }
+
+    /**
+     * Get the merchant's embeddable widgets.
+     *
+     * @return HasMany<Widget, $this>
+     */
+    public function widgets(): HasMany
+    {
+        return $this->hasMany(Widget::class);
+    }
+
+    /**
+     * Get all shopper conversations captured by this business's widget.
+     *
+     * @return HasMany<Conversation, $this>
+     */
+    public function conversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class);
     }
 
     /**

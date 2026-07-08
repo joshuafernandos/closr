@@ -6,14 +6,13 @@ use App\Data\BusinessPermissions;
 use App\Data\UserBusiness;
 use App\Enums\BusinessPermission;
 use App\Enums\BusinessRole;
-use App\Models\Membership;
 use App\Models\Business;
+use App\Models\Membership;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\URL;
 
 trait HasBusinesses
 {
@@ -87,8 +86,6 @@ trait HasBusinesses
 
         $this->update(['current_business_id' => $business->id]);
         $this->setRelation('currentBusiness', $business);
-
-        URL::defaults(['current_business' => $business->slug]);
 
         return true;
     }

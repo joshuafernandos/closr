@@ -13,9 +13,9 @@ use Inertia\Response;
 class ConnectorController extends Controller
 {
     /**
-     * Show the catalogue connector page for the current business.
+     * Show the catalogue connector page with the business's connected sources.
      */
-    public function edit(Request $request): Response
+    public function index(Request $request): Response
     {
         $business = $request->user()->currentBusiness;
 
@@ -23,48 +23,66 @@ class ConnectorController extends Controller
 
         Gate::authorize('view', $business);
 
-        $origin = $business->catalogueOrigin;
-
         return Inertia::render('connectors', [
-            'connection' => $origin === null ? null : [
-                'driver' => $origin->driver,
-                'url' => (string) ($origin->config['url'] ?? ''),
-            ],
+            'connections' => $business->catalogueOrigins()
+                ->latest()
+                ->get()
+                ->map(fn (CatalogueOrigin $origin): array => [
+                    'id' => $origin->id,
+                    'driver' => $origin->driver,
+                    'name' => $origin->name ?? (string) ($origin->config['url'] ?? ''),
+                    'url' => (string) ($origin->config['url'] ?? ''),
+                ])
+                ->all(),
         ]);
     }
 
     /**
-     * Connect (or reconnect) the current business to a WooCommerce store.
+     * Connect a new WooCommerce store as a catalogue source for the business.
      */
     public function store(ConnectWooCommerceRequest $request): RedirectResponse
     {
         $business = $request->user()->currentBusiness;
 
-        CatalogueOrigin::updateOrCreate(
-            ['business_id' => $business->id],
-            ['driver' => 'woocommerce', 'config' => $request->credentials()],
-        );
+        $credentials = $request->credentials();
+
+        $business->catalogueOrigins()->create([
+            'driver' => 'woocommerce',
+            'name' => $this->labelFor($credentials['url']),
+            'config' => $credentials,
+        ]);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('WooCommerce store connected.')]);
 
-        return to_route('connector.edit');
+        return to_route('connector.index');
     }
 
     /**
-     * Disconnect the current business's catalogue origin.
+     * Disconnect one of the business's catalogue sources.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request, CatalogueOrigin $origin): RedirectResponse
     {
         $business = $request->user()->currentBusiness;
 
         abort_if($business === null, 403);
 
         Gate::authorize('update', $business);
+        abort_unless($origin->business_id === $business->id, 403);
 
-        $business->catalogueOrigin()->delete();
+        $origin->delete();
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Store disconnected.')]);
 
-        return to_route('connector.edit');
+        return to_route('connector.index');
+    }
+
+    /**
+     * Build a friendly label for a source from its store URL (the host).
+     */
+    private function labelFor(string $url): string
+    {
+        $host = parse_url($url, PHP_URL_HOST);
+
+        return is_string($host) && $host !== '' ? $host : $url;
     }
 }

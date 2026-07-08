@@ -2,7 +2,6 @@
 
 namespace App\Http\Responses;
 
-use App\Http\Responses\Concerns\RedirectsToCurrentBusiness;
 use Illuminate\Http\JsonResponse;
 use Laravel\Fortify\Fortify;
 use Laravel\Passkeys\Contracts\PasskeyLoginResponse as PasskeyLoginResponseContract;
@@ -10,11 +9,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PasskeyLoginResponse implements PasskeyLoginResponseContract
 {
-    use RedirectsToCurrentBusiness;
-
     public function toResponse($request): Response
     {
-        $redirect = $this->redirectPathForCurrentBusiness($request, Fortify::redirects('login'));
+        $redirect = Fortify::redirects('login');
 
         return $request->wantsJson()
             ? new JsonResponse(['redirect' => redirect()->intended($redirect)->getTargetUrl()], 200)

@@ -82,9 +82,10 @@ export function ConnectorsShowcase() {
                         Connect your catalogue. Let Closr do the selling.
                     </h2>
                     <p className="text-sm text-neutral-300">
-                        Sync products from WooCommerce, Shopify or a CSV into one
-                        place. Closr searches your catalogue and recommends the
-                        right products in every conversation — automatically.
+                        Sync products from WooCommerce, Shopify or a CSV into
+                        one place. Closr searches your catalogue and recommends
+                        the right products in every conversation,
+                        automatically.
                     </p>
                 </div>
                 <div className="flex items-center gap-3">

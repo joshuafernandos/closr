@@ -12,6 +12,9 @@ use Illuminate\Contracts\Support\Arrayable;
  */
 class Product implements Arrayable
 {
+    /**
+     * @param  list<array{name: string, options: list<string>}>  $variations  The product's selectable attributes (size, colour, …). Empty for simple products.
+     */
     public function __construct(
         public int $id,
         public string $title,
@@ -21,12 +24,14 @@ class Product implements Arrayable
         public ?float $rating = null,
         public ?string $brand = null,
         public ?string $category = null,
+        public ?string $url = null,
+        public array $variations = [],
     ) {}
 
     /**
      * Get the array representation handed to the assistant as a search result.
      *
-     * @return array{id: int, title: string, price: float, rating: float|null, brand: string|null, category: string|null, thumbnail: string, description: string}
+     * @return array{id: int, title: string, price: float, rating: float|null, brand: string|null, category: string|null, thumbnail: string, description: string, url: string|null, variations: list<array{name: string, options: list<string>}>}
      */
     public function toArray(): array
     {
@@ -39,6 +44,8 @@ class Product implements Arrayable
             'category' => $this->category,
             'thumbnail' => $this->thumbnail,
             'description' => $this->description,
+            'url' => $this->url,
+            'variations' => $this->variations,
         ];
     }
 }

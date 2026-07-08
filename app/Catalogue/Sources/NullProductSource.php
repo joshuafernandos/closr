@@ -20,4 +20,30 @@ class NullProductSource implements ProductSource
     {
         return collect();
     }
+
+    /**
+     * @return Collection<int, string>
+     */
+    public function categories(int $limit = 8): Collection
+    {
+        return collect();
+    }
+
+    public function find(int $id): ?Product
+    {
+        return null;
+    }
+
+    public function cartUrl(int $productId, int $quantity = 1): ?string
+    {
+        return null;
+    }
+
+    /**
+     * @param  array<string, string>  $attributes
+     */
+    public function variantCartUrl(int $productId, array $attributes, int $quantity = 1): ?string
+    {
+        return null;
+    }
 }

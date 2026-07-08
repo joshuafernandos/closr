@@ -16,12 +16,26 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 
-export function WooCommerceDialog({ trigger }: { trigger: ReactNode }) {
-    const [open, setOpen] = useState(false);
+interface WooCommerceDialogProps {
+    /** Optional trigger element. Omit when controlling `open` externally. */
+    trigger?: ReactNode;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
+}
+
+export function WooCommerceDialog({
+    trigger,
+    open: controlledOpen,
+    onOpenChange,
+}: WooCommerceDialogProps) {
+    const [internalOpen, setInternalOpen] = useState(false);
+
+    const open = controlledOpen ?? internalOpen;
+    const setOpen = onOpenChange ?? setInternalOpen;
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>{trigger}</DialogTrigger>
+            {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Connect WooCommerce</DialogTitle>

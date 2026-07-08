@@ -47,6 +47,7 @@ export default function Register({ passwordRules, businessInvitation }: Props) {
                                     autoComplete="name"
                                     name="name"
                                     placeholder="Full name"
+                                    className="border-0 bg-muted shadow-none focus-visible:ring-0"
                                 />
                                 <InputError
                                     message={errors.name}
@@ -66,6 +67,7 @@ export default function Register({ passwordRules, businessInvitation }: Props) {
                                     autoComplete="organization"
                                     name="business_name"
                                     placeholder="Your store or company name"
+                                    className="border-0 bg-muted shadow-none focus-visible:ring-0"
                                 />
                                 <InputError message={errors.business_name} />
                             </div>
@@ -80,6 +82,7 @@ export default function Register({ passwordRules, businessInvitation }: Props) {
                                     autoComplete="email"
                                     name="email"
                                     placeholder="email@example.com"
+                                    className="border-0 bg-muted shadow-none focus-visible:ring-0"
                                 />
                                 <InputError message={errors.email} />
                             </div>
@@ -94,6 +97,7 @@ export default function Register({ passwordRules, businessInvitation }: Props) {
                                     name="password"
                                     placeholder="Password"
                                     passwordrules={passwordRules}
+                                    className="border-0 bg-muted shadow-none focus-visible:ring-0"
                                 />
                                 <InputError message={errors.password} />
                             </div>
@@ -110,6 +114,7 @@ export default function Register({ passwordRules, businessInvitation }: Props) {
                                     name="password_confirmation"
                                     placeholder="Confirm password"
                                     passwordrules={passwordRules}
+                                    className="border-0 bg-muted shadow-none focus-visible:ring-0"
                                 />
                                 <InputError
                                     message={errors.password_confirmation}
@@ -118,7 +123,7 @@ export default function Register({ passwordRules, businessInvitation }: Props) {
 
                             <Button
                                 type="submit"
-                                className="mt-2 w-full"
+                                className="mt-2 h-11 w-full rounded-none"
                                 tabIndex={6}
                                 data-test="register-user-button"
                             >

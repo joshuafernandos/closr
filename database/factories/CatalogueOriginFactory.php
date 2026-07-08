@@ -18,10 +18,13 @@ class CatalogueOriginFactory extends Factory
      */
     public function definition(): array
     {
+        $config = $this->woocommerceConfig();
+
         return [
             'business_id' => Business::factory(),
+            'name' => parse_url($config['url'], PHP_URL_HOST),
             'driver' => 'woocommerce',
-            'config' => $this->woocommerceConfig(),
+            'config' => $config,
         ];
     }
 
@@ -30,10 +33,15 @@ class CatalogueOriginFactory extends Factory
      */
     public function woocommerce(): static
     {
-        return $this->state(fn (array $attributes): array => [
-            'driver' => 'woocommerce',
-            'config' => $this->woocommerceConfig(),
-        ]);
+        return $this->state(function (array $attributes): array {
+            $config = $this->woocommerceConfig();
+
+            return [
+                'name' => parse_url($config['url'], PHP_URL_HOST),
+                'driver' => 'woocommerce',
+                'config' => $config,
+            ];
+        });
     }
 
     /**

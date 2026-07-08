@@ -21,7 +21,12 @@ class SearchProducts implements Tool
     {
         return 'Search the store catalogue for products matching what the shopper described. '
             .'Call this once you understand what the shopper wants, before recommending anything. '
-            .'Returns a JSON list of candidate products with price, rating, brand, category and description.';
+            .'Search by the core item the shopper named (e.g. "socks", "running shoes") — the store '
+            .'already broadens and ranks results, so colour, size and other preferences are handled as '
+            .'variations on the returned products rather than part of the query. If the shopper only '
+            .'asks for a general recommendation, search with the item type or category and the store '
+            .'returns its best-rated products. Returns a JSON list of candidate products with price, '
+            .'rating, brand, category, description and available variations.';
     }
 
     /**

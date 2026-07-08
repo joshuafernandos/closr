@@ -57,6 +57,7 @@ export default function Login({
                                     tabIndex={1}
                                     autoComplete="email"
                                     placeholder="email@example.com"
+                                    className="border-0 bg-muted shadow-none focus-visible:ring-0"
                                 />
                                 <InputError message={errors.email} />
                             </div>
@@ -81,6 +82,7 @@ export default function Login({
                                     tabIndex={2}
                                     autoComplete="current-password"
                                     placeholder="Password"
+                                    className="border-0 bg-muted shadow-none focus-visible:ring-0"
                                 />
                                 <InputError message={errors.password} />
                             </div>
@@ -96,7 +98,7 @@ export default function Login({
 
                             <Button
                                 type="submit"
-                                className="mt-4 w-full"
+                                className="mt-4 h-11 w-full rounded-none"
                                 tabIndex={4}
                                 disabled={processing}
                                 data-test="login-button"

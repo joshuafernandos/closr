@@ -6,10 +6,13 @@ use App\Catalogue\Contracts\ProductSource;
 use App\Catalogue\Sources\DummyJsonSource;
 use App\Catalogue\Sources\NullProductSource;
 use App\Catalogue\Sources\WooCommerceSource;
-use App\Models\Business;
+use App\Models\CatalogueOrigin;
+use App\Models\Widget;
 use Closure;
 use Illuminate\Contracts\Config\Repository;
+use Illuminate\Support\Facades\Cache;
 use InvalidArgumentException;
+use Throwable;
 
 /**
  * Resolves a ProductSource for a given merchant from their stored origin
@@ -31,18 +34,47 @@ class CatalogueManager
     }
 
     /**
-     * Resolve the catalogue origin for a merchant, falling back to a no-op
-     * source when the merchant has not connected a store.
+     * Resolve the catalogue source behind an origin, falling back to a no-op
+     * source when the widget has not picked one.
      */
-    public function forBusiness(Business $business): ProductSource
+    public function forOrigin(?CatalogueOrigin $origin): ProductSource
     {
-        $origin = $business->catalogueOrigin;
-
         if ($origin === null) {
             return new NullProductSource;
         }
 
         return $this->make($origin->driver, $origin->config ?? []);
+    }
+
+    /**
+     * Resolve a widget's top product categories for its quick-pick chips.
+     * Cached for an hour and resilient: an unreachable or empty store yields an
+     * empty list (so the widget falls back to default starters) without caching
+     * the failure.
+     *
+     * @return array<int, string>
+     */
+    public function categoriesFor(Widget $widget): array
+    {
+        $key = "catalogue:categories:widget:{$widget->id}";
+
+        $cached = Cache::get($key);
+
+        if ($cached !== null) {
+            return $cached;
+        }
+
+        try {
+            $categories = $this->forOrigin($widget->catalogueOrigin)->categories()->all();
+        } catch (Throwable) {
+            $categories = [];
+        }
+
+        if ($categories !== []) {
+            Cache::put($key, $categories, now()->addHour());
+        }
+
+        return $categories;
     }
 
     /**

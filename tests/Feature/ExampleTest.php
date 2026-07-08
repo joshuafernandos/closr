@@ -2,15 +2,17 @@
 
 use App\Models\User;
 
-test('guests are redirected to login from the home route', function () {
+test('the welcome page is shown to guests', function () {
     $this->get(route('home'))
-        ->assertRedirect(route('login'));
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page->component('welcome'));
 });
 
-test('authenticated users are redirected to their business dashboard', function () {
+test('the welcome page is shown to authenticated users', function () {
     $user = User::factory()->create();
 
     $this->actingAs($user)
         ->get(route('home'))
-        ->assertRedirect("/{$user->currentBusiness->slug}/dashboard");
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page->component('welcome'));
 });

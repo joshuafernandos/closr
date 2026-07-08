@@ -1,5 +1,5 @@
-import { Link, usePage } from '@inertiajs/react';
-import { Plug } from 'lucide-react';
+import { Link } from '@inertiajs/react';
+import { LayoutGrid, LayoutTemplate, MessageSquare, Plug } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavUser } from '@/components/nav-user';
 import {
@@ -15,23 +15,35 @@ import {
 } from '@/components/ui/sidebar';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { dashboard } from '@/routes';
-import { edit as connectors } from '@/routes/connector';
+import { index as connectors } from '@/routes/connector';
+import { index as messages } from '@/routes/messages';
+import { index as widgets } from '@/routes/widgets';
 import type { NavItem } from '@/types';
 
 export function AppSidebar() {
-    const page = usePage();
-    const { isCurrentUrl } = useCurrentUrl();
+    const { isCurrentUrl, isCurrentOrParentUrl } = useCurrentUrl();
 
-    const dashboardUrl = page.props.currentBusiness
-        ? dashboard(page.props.currentBusiness.slug)
-        : '/';
+    const dashboardUrl = dashboard();
 
     const workspaceItems: NavItem[] = [
+        { title: 'Dashboard', href: dashboardUrl, icon: LayoutGrid },
         { title: 'Connectors', href: connectors(), icon: Plug },
+        {
+            title: 'Widgets',
+            href: widgets(),
+            icon: LayoutTemplate,
+            matchSubPaths: true,
+        },
+        {
+            title: 'Messages',
+            href: messages(),
+            icon: MessageSquare,
+            matchSubPaths: true,
+        },
     ];
 
     return (
-        <Sidebar collapsible="icon" variant="inset">
+        <Sidebar collapsible="icon" variant="sidebar">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
@@ -52,8 +64,13 @@ export function AppSidebar() {
                             <SidebarMenuItem key={item.title}>
                                 <SidebarMenuButton
                                     asChild
-                                    isActive={isCurrentUrl(item.href)}
+                                    isActive={
+                                        item.matchSubPaths
+                                            ? isCurrentOrParentUrl(item.href)
+                                            : isCurrentUrl(item.href)
+                                    }
                                     tooltip={{ children: item.title }}
+                                    className="data-[active=true]:bg-primary data-[active=true]:text-primary-foreground data-[active=true]:hover:bg-primary data-[active=true]:hover:text-primary-foreground [&>svg]:data-[active=true]:text-primary-foreground"
                                 >
                                     <Link href={item.href} prefetch>
                                         {item.icon && <item.icon />}

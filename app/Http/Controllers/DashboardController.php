@@ -13,6 +13,8 @@ class DashboardController extends Controller
     {
         $email = strtolower($request->user()->email);
 
+        $business = $request->user()->currentBusiness;
+
         $pendingInvitations = BusinessInvitation::query()
             ->with(['inviter', 'business'])
             ->whereRaw('LOWER(email) = ?', [$email])
@@ -33,6 +35,16 @@ class DashboardController extends Controller
 
         return Inertia::render('dashboard', [
             'pendingInvitations' => $pendingInvitations,
+            'onboarding' => [
+                'storeConnected' => $business?->catalogueOrigins()->exists() ?? false,
+                'widgetCustomized' => $business?->widgets()->exists() ?? false,
+                'widgetPreviewed' => $business?->conversations()->exists() ?? false,
+            ],
+            'stats' => [
+                'conversations' => $business?->conversations()->count() ?? 0,
+                'widgets' => $business?->widgets()->count() ?? 0,
+                'stores' => $business?->catalogueOrigins()->count() ?? 0,
+            ],
         ]);
     }
 }

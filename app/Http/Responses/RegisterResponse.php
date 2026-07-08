@@ -2,7 +2,6 @@
 
 namespace App\Http\Responses;
 
-use App\Http\Responses\Concerns\RedirectsToCurrentBusiness;
 use Illuminate\Http\JsonResponse;
 use Laravel\Fortify\Contracts\RegisterResponse as RegisterResponseContract;
 use Laravel\Fortify\Fortify;
@@ -10,12 +9,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RegisterResponse implements RegisterResponseContract
 {
-    use RedirectsToCurrentBusiness;
-
     public function toResponse($request): Response
     {
         return $request->wantsJson()
             ? new JsonResponse(['two_factor' => false], 201)
-            : redirect()->intended($this->redirectPathForCurrentBusiness($request, Fortify::redirects('register')));
+            : redirect()->intended(Fortify::redirects('register'));
     }
 }

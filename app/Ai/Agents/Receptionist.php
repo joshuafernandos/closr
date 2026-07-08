@@ -62,6 +62,13 @@ class Receptionist implements Agent, Conversational, HasStructuredOutput, HasToo
             4. checkout — When a product is chosen, confirm it's been added to the bag and complete the order.
             5. done — Conversation finished.
 
+            Searching:
+            - Search by the core item the shopper named ("socks", not "white socks"); colour/size/price are
+              preferences you match against the returned products and their variations, not search keywords.
+            - If the shopper asks for a recommendation without naming anything ("what's good?", "your best"),
+              still call SearchProducts so you recommend real products — never invent them.
+            - If a search returns nothing, retry once with a broader term before telling the shopper.
+
             Structured response:
             - reply: shopper-facing message.
             - step: greet | qualify | recommend | checkout | done.

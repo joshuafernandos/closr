@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -16,13 +17,14 @@ use Illuminate\Support\Carbon;
  *
  * @property int $id
  * @property int $business_id
+ * @property string|null $name
  * @property string $driver
  * @property array<string, mixed> $config
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Business $business
  */
-#[Fillable(['business_id', 'driver', 'config'])]
+#[Fillable(['business_id', 'name', 'driver', 'config'])]
 class CatalogueOrigin extends Model
 {
     /** @use HasFactory<CatalogueOriginFactory> */
@@ -36,6 +38,16 @@ class CatalogueOrigin extends Model
     public function business(): BelongsTo
     {
         return $this->belongsTo(Business::class);
+    }
+
+    /**
+     * Get the widgets reading from this source.
+     *
+     * @return HasMany<Widget, $this>
+     */
+    public function widgets(): HasMany
+    {
+        return $this->hasMany(Widget::class);
     }
 
     /**

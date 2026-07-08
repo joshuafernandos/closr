@@ -49,7 +49,7 @@ test('users can authenticate using the login screen', function () {
     $response->assertRedirect(route('dashboard'));
 });
 
-test('passkey login response redirects to the current business dashboard', function () {
+test('passkey login response redirects to the dashboard', function () {
     $user = User::factory()->create();
 
     $request = Request::create(route('login', absolute: false), 'GET', server: [
@@ -60,7 +60,7 @@ test('passkey login response redirects to the current business dashboard', funct
 
     $jsonResponse = app(PasskeyLoginResponse::class)->toResponse($request);
 
-    expect($jsonResponse->getData()->redirect)->toBe(route('dashboard', ['current_business' => $user->personalBusiness()->slug]));
+    expect($jsonResponse->getData()->redirect)->toBe(route('dashboard'));
 });
 
 test('users with two factor enabled are redirected to two factor challenge', function () {
